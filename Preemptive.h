@@ -7,7 +7,7 @@
 #include <string>
 using namespace std;
 class Preemptive{
-  // private:
+  private:
     vector<Process*> processes;
   public:
     Preemptive(vector<Process*> processes){
@@ -28,9 +28,124 @@ class Preemptive{
         }
     }
   private:
-    void roundRobin(){
-  
+    void roundRobin() {
+        int timeQuantum;
+        cout << "Enter time quantum: " << endl;
+        cin >> timeQuantum;
+    
+        // Sort processes based on arrival time
+        sort(processes.begin(), processes.end(), [](const Process* a, const Process* b) {
+            return a->arrivalTime < b->arrivalTime;
+        });
+    
+        queue<Process*> readyQueue;
+        map<string, bool> inReadyQueue;
+        map<string, bool> completed;
+        map<string, int> remainingBurstTime;
+        int remainingProcesses = processes.size();
+        int processesIncluded = 0;
+        int currentTime = 0;
+        vector<pair<string, int>> ganttChart;
+    
+        // Initialize remaining burst times
+        for (Process* process : processes) {
+            remainingBurstTime[process->ID] = process->burstTime;
+        }
+    
+        while (remainingProcesses > 0) {
+            // Add newly arrived processes to the ready queue
+            for (Process* process : processes) {
+                if (currentTime >= process->arrivalTime && !completed[process->ID] && !inReadyQueue[process->ID]) {
+                    inReadyQueue[process->ID] = true;
+                    readyQueue.push(process);
+                    processesIncluded++;
+                }
+            }
+    
+            // If ready queue is empty, move to the next arriving process
+            if (readyQueue.empty()) {
+                for (Process* process : processes) {
+                    if (!completed[process->ID]) {
+                        currentTime = process->arrivalTime;
+                        readyQueue.push(process);
+                        inReadyQueue[process->ID] = true;
+                        processesIncluded++;
+                        break;
+                    }
+                }
+            }
+    
+            Process* process = readyQueue.front();
+            readyQueue.pop();
+    
+            if (process->responseTime == -1) {
+                process->responseTime = currentTime - process->arrivalTime;
+            }
+    
+            
+            int timeRemaining = timeQuantum;
+            while(remainingBurstTime[process->ID]>0 && timeRemaining>0){
+
+
+                for (Process* process : processes) {
+                    if (currentTime >= process->arrivalTime && !completed[process->ID] && !inReadyQueue[process->ID]) {
+                        inReadyQueue[process->ID] = true;
+                        readyQueue.push(process);
+                        processesIncluded++;
+                    }
+                }
+                
+                currentTime++;
+                timeRemaining--;
+                remainingBurstTime[process->ID]--;
+                if(remainingBurstTime[process->ID]==0){
+                    process->completionTime = currentTime;
+                    process->turnaroundTime = process->completionTime - process->arrivalTime;
+                    process->waitingTime = process->turnaroundTime - process->burstTime;
+                    completed[process->ID] = true;
+                    remainingProcesses--;
+                    break;
+                }
+                
+            }
+            if(!completed[process->ID]) readyQueue.push(process);
+            ganttChart.push_back({process->ID, currentTime});
+        }
+    
+        // Calculate total waiting time and turnaround time
+        int totalWaitingTime = 0;
+        int totalTurnaroundTime = 0;
+        for (const Process* process : processes) {
+            totalWaitingTime += process->waitingTime;
+            totalTurnaroundTime += process->turnaroundTime;
+        }
+    
+        double avgWaitingTime = static_cast<double>(totalWaitingTime) / processes.size();
+        double avgTurnaroundTime = static_cast<double>(totalTurnaroundTime) / processes.size();
+    
+        // Print Gantt Chart
+        cout << "\nGantt Chart:\n|";
+        for (const auto& entry : ganttChart) {
+            cout << "  " << entry.first << "  |";
+        }
+        cout << "\n0";
+        for (const auto& entry : ganttChart) {
+            cout << "      " << entry.second;
+        }
+        cout << "\n";
+    
+        // Print detailed information
+        cout << "\nProcess\tArrival Time\tBurst Time\tWaiting Time\tTurnaround Time\tResponse Time\tCompletion Time\n";
+        for (const Process* process : processes) {
+            cout << process->ID << "\t\t" << process->arrivalTime << "\t\t" << process->burstTime << "\t\t" 
+                 << process->waitingTime << "\t\t" << process->turnaroundTime << "\t\t" 
+                 << process->responseTime << "\t\t" << process->completionTime << "\n";
+        }
+    
+        cout << "\nAverage Waiting Time: " << avgWaitingTime << "\n";
+        cout << "Average Turnaround Time: " << avgTurnaroundTime << "\n";
     }
+
     void priority(){
   
     }  
