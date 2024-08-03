@@ -16,12 +16,12 @@ class Simulation{
       cout<<"Enter 1 for Preemptive Scheduling, 2 for Non-Preemptive Scheduling: "<<endl;
       cin>>choice;
       if(choice==1){
-        Preemptive* app = new Preemptive(processes);
+        Preemptive* app = new Preemptive(processes,true);
         app->run();
         delete app;
       }
       else{
-        NonPreemptive* app = new NonPreemptive(processes);
+        NonPreemptive* app = new NonPreemptive(processes,true);
         app->run();
         delete app;
       }

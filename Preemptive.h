@@ -2,6 +2,7 @@
 #define PREEMPTIVE_H
 
 #include "Process.h"
+#include "Summary.h"
 #include <iostream>
 #include <vector>
 #include <string>
@@ -9,9 +10,11 @@ using namespace std;
 class Preemptive{
   private:
     vector<Process*> processes;
+    bool simulation;
   public:
-    Preemptive(vector<Process*> processes){
+    Preemptive(vector<Process*> processes,bool simulation){
         this->processes = processes;
+        this->simulation = simulation;
     }
     void run(){
       int choice;
@@ -28,7 +31,7 @@ class Preemptive{
         }
     }
   private:
-    void roundRobin() {
+    Summary* roundRobin() {
         int timeQuantum;
         cout << "Enter time quantum: " << endl;
         cin >> timeQuantum;
@@ -127,32 +130,36 @@ class Preemptive{
         double avgTurnaroundTime = static_cast<double>(totalTurnaroundTime) / processes.size();
 
         double avgResponseTime = static_cast<double>(totalResponseTime) / processes.size();
-    
-        // Print Gantt Chart
-        cout << "\nGantt Chart:\n|";
-        for (const auto& entry : ganttChart) {
-            cout << "  " << entry.first << "  |";
+
+        if(simulation){
+            // Print Gantt Chart
+            cout << "\nGantt Chart:\n|";
+            for (const auto& entry : ganttChart) {
+                cout << "  " << entry.first << "  |";
+            }
+            cout << "\n0";
+            for (const auto& entry : ganttChart) {
+                cout << "      " << entry.second;
+            }
+            cout << "\n";
+        
+            // Print detailed information
+            cout << "\nProcess\tArrival Time\tBurst Time\tWaiting Time\tTurnaround Time\tResponse Time\tCompletion Time\n";
+            for (const Process* process : processes) {
+                cout << process->ID << "\t\t" << process->arrivalTime << "\t\t" << process->burstTime << "\t\t" 
+                     << process->waitingTime << "\t\t" << process->turnaroundTime << "\t\t" 
+                     << process->responseTime << "\t\t" << process->completionTime << "\n";
+            }
+        
+            cout << "\nAverage Waiting Time: " << avgWaitingTime << "\n";
+            cout << "Average Turnaround Time: " << avgTurnaroundTime << "\n";
+            cout << "Average Response Time: " << avgResponseTime << "\n";
         }
-        cout << "\n0";
-        for (const auto& entry : ganttChart) {
-            cout << "      " << entry.second;
-        }
-        cout << "\n";
-    
-        // Print detailed information
-        cout << "\nProcess\tArrival Time\tBurst Time\tWaiting Time\tTurnaround Time\tResponse Time\tCompletion Time\n";
-        for (const Process* process : processes) {
-            cout << process->ID << "\t\t" << process->arrivalTime << "\t\t" << process->burstTime << "\t\t" 
-                 << process->waitingTime << "\t\t" << process->turnaroundTime << "\t\t" 
-                 << process->responseTime << "\t\t" << process->completionTime << "\n";
-        }
-    
-        cout << "\nAverage Waiting Time: " << avgWaitingTime << "\n";
-        cout << "Average Turnaround Time: " << avgTurnaroundTime << "\n";
-        cout << "Average Response Time: " << avgResponseTime << "\n";
+
+        return new Summary(avgWaitingTime, avgTurnaroundTime, avgResponseTime);
     }
 
-    void priority() {
+    Summary* priority() {
         // Sort processes based on arrival time
         sort(processes.begin(), processes.end(), [](const Process* a, const Process* b) {
             return a->arrivalTime < b->arrivalTime;
@@ -219,32 +226,36 @@ class Preemptive{
         double avgTurnaroundTime = static_cast<double>(totalTurnaroundTime) / processes.size();
 
         double avgResponseTime = static_cast<double>(totalResponseTime) / processes.size();
-    
-        // Print Gantt Chart
-        cout << "\nGantt Chart:\n|";
-        for (const auto& entry : ganttChart) {
-            cout << "  " << entry.first << "  |";
+
+        if(simulation){
+            // Print Gantt Chart
+            cout << "\nGantt Chart:\n|";
+            for (const auto& entry : ganttChart) {
+                cout << "  " << entry.first << "  |";
+            }
+            cout << "\n0";
+            for (const auto& entry : ganttChart) {
+                cout << "      " << entry.second;
+            }
+            cout << "\n";
+        
+            // Print detailed information
+            cout << "\nProcess\tArrival Time\tBurst Time\tPriority\tWaiting Time\tTurnaround Time\tResponse Time\tCompletion Time\n";
+            for (const Process* process : processes) {
+                cout << process->ID << "\t\t" << process->arrivalTime << "\t\t" << process->burstTime << "\t\t" << process->priority << "\t\t" 
+                     << process->waitingTime << "\t\t" << process->turnaroundTime << "\t\t" 
+                     << process->responseTime << "\t\t" << process->completionTime << "\n";
+            }
+        
+            cout << "\nAverage Waiting Time: " << avgWaitingTime << "\n";
+            cout << "Average Turnaround Time: " << avgTurnaroundTime << "\n";
+            cout << "Average Response Time: " << avgResponseTime << "\n";
         }
-        cout << "\n0";
-        for (const auto& entry : ganttChart) {
-            cout << "      " << entry.second;
-        }
-        cout << "\n";
-    
-        // Print detailed information
-        cout << "\nProcess\tArrival Time\tBurst Time\tPriority\tWaiting Time\tTurnaround Time\tResponse Time\tCompletion Time\n";
-        for (const Process* process : processes) {
-            cout << process->ID << "\t\t" << process->arrivalTime << "\t\t" << process->burstTime << "\t\t" << process->priority << "\t\t" 
-                 << process->waitingTime << "\t\t" << process->turnaroundTime << "\t\t" 
-                 << process->responseTime << "\t\t" << process->completionTime << "\n";
-        }
-    
-        cout << "\nAverage Waiting Time: " << avgWaitingTime << "\n";
-        cout << "Average Turnaround Time: " << avgTurnaroundTime << "\n";
-        cout << "Average Response Time: " << avgResponseTime << "\n";
+
+        return new Summary(avgWaitingTime, avgTurnaroundTime, avgResponseTime);
     }
  
-    void srtf() {
+    Summary* srtf() {
         // Sort processes based on arrival time
         sort(processes.begin(), processes.end(), [](const Process* a, const Process* b) {
             return a->arrivalTime < b->arrivalTime;
@@ -311,29 +322,34 @@ class Preemptive{
         double avgTurnaroundTime = static_cast<double>(totalTurnaroundTime) / processes.size();
 
         double avgResponseTime = static_cast<double>(totalResponseTime) / processes.size();
-    
-        // Print Gantt Chart
-        cout << "\nGantt Chart:\n|";
-        for (const auto& entry : ganttChart) {
-            cout << "  " << entry.first << "  |";
+
+
+        if(simulation){
+            // Print Gantt Chart
+            cout << "\nGantt Chart:\n|";
+            for (const auto& entry : ganttChart) {
+                cout << "  " << entry.first << "  |";
+            }
+            cout << "\n0";
+            for (const auto& entry : ganttChart) {
+                cout << "      " << entry.second;
+            }
+            cout << "\n";
+        
+            // Print detailed information
+            cout << "\nProcess\tArrival Time\tBurst Time\tWaiting Time\tTurnaround Time\tResponse Time\tCompletion Time\n";
+            for (const Process* process : processes) {
+                cout << process->ID << "\t\t" << process->arrivalTime << "\t\t" << process->burstTime << "\t\t" 
+                     << process->waitingTime << "\t\t" << process->turnaroundTime << "\t\t" 
+                     << process->responseTime << "\t\t" << process->completionTime << "\n";
+            }
+        
+            cout << "\nAverage Waiting Time: " << avgWaitingTime << "\n";
+            cout << "Average Turnaround Time: " << avgTurnaroundTime << "\n";
+            cout << "Average Response Time: " << avgResponseTime << "\n";
         }
-        cout << "\n0";
-        for (const auto& entry : ganttChart) {
-            cout << "      " << entry.second;
-        }
-        cout << "\n";
-    
-        // Print detailed information
-        cout << "\nProcess\tArrival Time\tBurst Time\tWaiting Time\tTurnaround Time\tResponse Time\tCompletion Time\n";
-        for (const Process* process : processes) {
-            cout << process->ID << "\t\t" << process->arrivalTime << "\t\t" << process->burstTime << "\t\t" 
-                 << process->waitingTime << "\t\t" << process->turnaroundTime << "\t\t" 
-                 << process->responseTime << "\t\t" << process->completionTime << "\n";
-        }
-    
-        cout << "\nAverage Waiting Time: " << avgWaitingTime << "\n";
-        cout << "Average Turnaround Time: " << avgTurnaroundTime << "\n";
-        cout << "Average Response Time: " << avgResponseTime << "\n";
+
+        return new Summary(avgWaitingTime, avgTurnaroundTime, avgResponseTime);
     }
 
 };
