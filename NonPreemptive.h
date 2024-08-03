@@ -48,13 +48,18 @@ class NonPreemptive{
         // Calculate total waiting time and turnaround time
         int totalWaitingTime = 0;
         int totalTurnaroundTime = 0;
+        int totalResponseTime = 0;
+
         for (const Process* process : processes) {
             totalWaitingTime += process->waitingTime;
             totalTurnaroundTime += process->turnaroundTime;
+            totalResponseTime += process->responseTime;
         }
-    
+
         double avgWaitingTime = static_cast<double>(totalWaitingTime) / processes.size();
         double avgTurnaroundTime = static_cast<double>(totalTurnaroundTime) / processes.size();
+
+        double avgResponseTime = static_cast<double>(totalResponseTime) / processes.size();
     
         // Print Gantt Chart
         cout << "\nGantt Chart:\n";
@@ -77,6 +82,7 @@ class NonPreemptive{
     
         cout << "\nAverage Waiting Time: " << avgWaitingTime << "\n";
         cout << "Average Turnaround Time: " << avgTurnaroundTime << "\n";
+        cout << "Average Response Time: " << avgResponseTime << "\n";
     }
 
 
@@ -126,13 +132,18 @@ class NonPreemptive{
         // Calculate total waiting time and turnaround time
         int totalWaitingTime = 0;
         int totalTurnaroundTime = 0;
+        int totalResponseTime = 0;
+
         for (const Process* process : processes) {
             totalWaitingTime += process->waitingTime;
             totalTurnaroundTime += process->turnaroundTime;
+            totalResponseTime += process->responseTime;
         }
 
         double avgWaitingTime = static_cast<double>(totalWaitingTime) / processes.size();
         double avgTurnaroundTime = static_cast<double>(totalTurnaroundTime) / processes.size();
+
+        double avgResponseTime = static_cast<double>(totalResponseTime) / processes.size();
 
         sort(processes.begin(), processes.end(), [](const Process* a, const Process* b) {
             return a->completionTime < b->completionTime;
@@ -159,6 +170,7 @@ class NonPreemptive{
 
         cout << "\nAverage Waiting Time: " << avgWaitingTime << "\n";
         cout << "Average Turnaround Time: " << avgTurnaroundTime << "\n";
+        cout << "Average Response Time: " << avgResponseTime << "\n";
     }
 
 
@@ -206,13 +218,18 @@ class NonPreemptive{
             // Calculate total waiting time and turnaround time
             int totalWaitingTime = 0;
             int totalTurnaroundTime = 0;
+            int totalResponseTime = 0;
+            
             for (const Process* process : processes) {
                 totalWaitingTime += process->waitingTime;
                 totalTurnaroundTime += process->turnaroundTime;
+                totalResponseTime += process->responseTime;
             }
 
             double avgWaitingTime = static_cast<double>(totalWaitingTime) / processes.size();
             double avgTurnaroundTime = static_cast<double>(totalTurnaroundTime) / processes.size();
+
+            double avgResponseTime = static_cast<double>(totalResponseTime) / processes.size();
 
             sort(processes.begin(), processes.end(), [](const Process* a, const Process* b) {
                 return a->completionTime < b->completionTime;
@@ -239,6 +256,7 @@ class NonPreemptive{
 
             cout << "\nAverage Waiting Time: " << avgWaitingTime << "\n";
             cout << "Average Turnaround Time: " << avgTurnaroundTime << "\n";
+            cout << "Average Response Time: " << avgResponseTime << "\n";
         }
 };
 #endif
