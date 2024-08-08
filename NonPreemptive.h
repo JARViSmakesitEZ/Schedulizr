@@ -32,7 +32,7 @@ class NonPreemptive{
             priority();
         }
     }
-  private:
+  public:
     Summary* fcfs() {
         // Sort processes based on arrival time
         sort(processes.begin(), processes.end(), [](const Process* a, const Process* b) {

@@ -30,7 +30,7 @@ class Preemptive{
             priority();
         }
     }
-  private:
+  public:
     Summary* roundRobin() {
         int timeQuantum;
         cout << "Enter time quantum: " << endl;

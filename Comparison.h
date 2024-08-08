@@ -12,9 +12,19 @@ using namespace std;
 
 class Comparison {
     vector<Process*> processes;
+    Preemptive* p1;
+    NonPreemptive* p2;
 
-    Summary* runFunction(function<Summary*()> func) {
-        return func();
+public:
+    Comparison(vector<Process*> processes) {
+        this->processes = processes;
+        p1 = new Preemptive(processes, false);
+        p2 = new NonPreemptive(processes, false);
+    }
+
+    // Function to run the scheduling algorithm and return the Summary
+    Summary* runFunction(Summary*(NonPreemptive::*func)(), NonPreemptive* scheduler) {
+        return (scheduler->*func)();
     }
 
     void printSummary(const string& algoName, Summary* summary) {
@@ -25,17 +35,7 @@ class Comparison {
     }
 
 public:
-    Comparison(vector<Process*> processes) : processes(processes) {}
-
     void run() {
-        // Create copies of processes for each algorithm
-        vector<Process*> processesFCFS = processes;
-        vector<Process*> processesSJF = processes;
-        vector<Process*> processesNPPriority = processes;
-        vector<Process*> processesRR = processes;
-        vector<Process*> processesSRTF = processes;
-        vector<Process*> processesPPriority = processes;
-
         // Create Summary pointers to hold results
         Summary* summaryFCFS = nullptr;
         Summary* summarySJF = nullptr;
@@ -45,12 +45,12 @@ public:
         Summary* summaryPPriority = nullptr;
 
         // Create threads for each scheduling algorithm
-        thread t1([&]() { summaryFCFS = fcfs(processesFCFS); });
-        thread t2([&]() { summarySJF = sjf(processesSJF); });
-        thread t3([&]() { summaryNPPriority = priorityNonPreemptive(processesNPPriority); });
-        thread t4([&]() { summaryRR = roundRobin(processesRR); });
-        thread t5([&]() { summarySRTF = srtf(processesSRTF); });
-        thread t6([&]() { summaryPPriority = priorityPreemptive(processesPPriority); });
+        thread t1([&]() { summaryFCFS = runFunction(&NonPreemptive::fcfs, p2); });
+        thread t2([&]() { summarySJF = runFunction(&NonPreemptive::sjf, p2); });
+        thread t3([&]() { summaryNPPriority = runFunction(&NonPreemptive::priority, p2); });
+        thread t4([&]() { summaryRR = p1->roundRobin(); });
+        thread t5([&]() { summarySRTF = p1->srtf(); });
+        thread t6([&]() { summaryPPriority = p1->priority(); });
 
         // Wait for all threads to complete
         t1.join();
